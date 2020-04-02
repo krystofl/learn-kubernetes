@@ -1,0 +1,16 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hello-py-cronjob
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello-py-cronjob
+            image: krystofl/hello-py:v1
+            args:
+            - ./hello.py
+          restartPolicy: OnFailure

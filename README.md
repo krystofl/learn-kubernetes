@@ -55,6 +55,7 @@ Create a deployment:
 A [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 provides declarative updates for Pods and ReplicaSets.
 
+
 ## 3.1 Have Kubernetes pass a secret to the image
 
 TODO
@@ -62,7 +63,29 @@ TODO
 
 # 4. Get Kubernetes to periodically run the script
 
-TODO
+[Docs](https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/)
+
+The cronjob is specified in `cronjob.yaml`.
+It runs `hello.py` once per minute.
+
+To schedule it, run
+
+    microk8s kubectl create -f cronjob.yaml
+
+To view that it's scheduled, run
+
+    microk8s kubectl get cronjob hello-py-cronjob
+
+As always, you can see the pods created with `watch microk8s kubectl get pods`
+
+To view the output (logs), run
+
+    microk8s kubectl logs <<PODNAME>>
+
+where <<PODNAME>> is the name of a pod.
+
+To delete the cronjob, run `microk8s kubectl delete cronjob hello-py-cronjob`
+
 
 
 # 5. Do it all with a private container image
