@@ -1,8 +1,8 @@
 
-FROM node:carbon
+FROM python:3.8-slim-buster
 
-EXPOSE 3000
+EXPOSE 4444
 
-COPY index.js .
+COPY hello.py .
 
-CMD node index.js
+CMD ./hello.py

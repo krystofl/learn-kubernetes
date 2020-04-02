@@ -1,0 +1,22 @@
+# k8s/deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-py
+  labels:
+    app: hello-py
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-py
+  template:
+    metadata:
+      labels:
+        app: hello-py
+    spec:
+      containers:
+        - name: hello-py
+          image: localhost:5000/hello-py:v1
+          imagePullPolicy: IfNotPresent
