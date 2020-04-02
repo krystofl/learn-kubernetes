@@ -18,5 +18,4 @@ spec:
     spec:
       containers:
         - name: hello-py
-          image: localhost:5000/hello-py:v1
-          imagePullPolicy: IfNotPresent
+          image: krystofl/hello-py:v1

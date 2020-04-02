@@ -6,8 +6,22 @@ The following assumes you have Docker installed and working
 (and are logged in to Docker Hub), and that you have a
 [Microk8s](https://microk8s.io/#get-started) cluster working.
 
+**Goals:**
+1. Build a simple Hello World python container image
+2. Push the image to a repository
+3. deploy it to a local Microk8s cluster
+    - 3.1 - have k8s provide a secret to the container (TODO)
+4. have kubernetes periodically run the hello world script (TODO)
+5. Same 1-4 above, but now with a private image (TODO)
 
-## Create and Publish a Container Image
+**Questions:**
+- should the pod with the image run continually while k8s schedules jobs on it,
+  or should it be spun up as needed by k8s' cron?
+- does the container need a storage volume?
+-
+
+
+# 1. Build a Container Image
 
 The repo contains a very simple python "Hello World" application.
 
@@ -16,8 +30,64 @@ To create a container from it, run
     docker build -t hello-py:v1 .
 
 
-### Option 1: make the container available on a local registry
+# 2. Push the image to a repository
+
+In this case to docker hub @ `krystofl/hello-py`
+(adapted from https://stackoverflow.com/a/58633144)
+
+    docker tag hello-py:v1 localhost:5000/hello-py:v1
+    docker push krystofl/hello-py:v1
+
+
+
+# 3. Get the container running on Microk8s
+
+To watch what's going on, you could use
+`watch microk8s kubectl get pods` and
+`watch microk8s kubectl get deployments`
+
+Start microk8s: `microk8s start`
+
+Create a deployment:
+
+    microk8s kubectl create -f deployment.yaml
+
+A [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+provides declarative updates for Pods and ReplicaSets.
+
+## 3.1 Have Kubernetes pass a secret to the image
+
+TODO
+
+
+# 4. Get Kubernetes to periodically run the script
+
+TODO
+
+
+# 5. Do it all with a private container image
+
+TODO
+
+
+
+
+
+
+
+
+
+
+# Notes
+
+## Working with local-only images (TODO/WIP)
+I haven't been able to get this to work yet, so this is WIP:
 (adapted from https://stackoverflow.com/a/59699968)
+
+This also looks like a good guide for a local deployment:
+https://blog.payara.fish/what-is-kubernetes
+
+And straight from Docker: https://www.docker.com/blog/how-to-use-your-own-registry/
 
 1. Start a local registry server:
 ```
@@ -35,49 +105,7 @@ sudo docker push localhost:5000/hello-py
 ```
 
 
-
-### Option 2: push the image to Docker Hub
-(adapted from https://stackoverflow.com/a/58633144)
-
-To push the container to the Docker registry, so that Kubernetes can find it there later
-(adapted from https://stackoverflow.com/a/59699968):
-
-    docker tag hello-py:v1 krystofl/hello-py:v1
-    docker push krystofl/hello-py:v1
-
-
-
-## Get the container running on Microk8s
-
-Start microk8s: `microk8s start`
-
-Create a deployment:
-
-    microk8s kubectl create -f deployment.yaml
-
-A [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
-provides declarative updates for Pods and ReplicaSets.
-
-**NOTE: this is probably not needed for hello-py?**
-Set up port forwarding to talk to the Pod:
-
-    POD_NAME=$(microk8s kubectl get pods | grep kubernetes-101 | awk '{print $1}')
-    microk8s kubectl port-forward $POD_NAME 3000:3000
-
-
-
-# Note on Working with local-only images
-Per [this](https://stackoverflow.com/a/59699968) Stack Overflow answer,
-if working with only local images, need to start a local docker TODO
-
-
-# Monitoring
-To keep an eye on what's going on, you could use
-`watch microk8s kubectl get pods` and
-`watch microk8s kubectl get deployments`
-
-
-# Notes
+## Resources
 
 This was originally forked from https://github.com/rackbrainz/kubernetes-101,
 which accompanies
