@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
           - name: hello-py-cronjob
-            image: krystofl/hello-py:v1
+            image: krystofl/hello-py:v1.1
             args:
             - ./hello.py
           restartPolicy: OnFailure

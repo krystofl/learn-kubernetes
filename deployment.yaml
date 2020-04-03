@@ -18,4 +18,15 @@ spec:
     spec:
       containers:
         - name: hello-py
-          image: krystofl/hello-py:v1
+          image: krystofl/hello-py:v1.1
+          volumeMounts:
+          - name: secret-volume
+            mountPath: "/"
+            readOnly: true
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: my-secret
+          items:
+          - key: secret.txt
+            path: my-mounted-secret.txt

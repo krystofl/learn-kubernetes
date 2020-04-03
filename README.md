@@ -11,7 +11,7 @@ The following assumes you have Docker installed and working
 2. Push the image to a repository
 3. deploy it to a local Microk8s cluster
     - 3.1 - have k8s provide a secret to the container (TODO)
-4. have kubernetes periodically run the hello world script (TODO)
+4. Have Kubernetes periodically run the hello world script
 5. Same 1-4 above, but now with a private image (TODO)
 
 **Questions:**
@@ -27,7 +27,7 @@ The repo contains a very simple python "Hello World" application.
 
 To create a container from it, run
 
-    docker build -t hello-py:v1 .
+    docker build -t hello-py:v1.1 .
 
 
 # 2. Push the image to a repository
@@ -35,8 +35,8 @@ To create a container from it, run
 In this case to docker hub @ `krystofl/hello-py`
 (adapted from https://stackoverflow.com/a/58633144)
 
-    docker tag hello-py:v1 localhost:5000/hello-py:v1
-    docker push krystofl/hello-py:v1
+    docker tag hello-py:v1.1 krystofl/hello-py:v1.1
+    docker push krystofl/hello-py:v1.1
 
 
 
@@ -58,12 +58,22 @@ provides declarative updates for Pods and ReplicaSets.
 
 ## 3.1 Have Kubernetes pass a secret to the image
 
-TODO
+There's a secret in `secret.txt`.
+
+To create the secret, run
+
+    microk8s kubectl create secret generic my-secret --from-file=./secret.txt
+
+The secret gets mounted to the hello-py volume as specified in
+
 
 
 # 4. Get Kubernetes to periodically run the script
 
 [Docs](https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/)
+
+First, make sure the deployment created earlier isn't running.
+If it is, you can delete it with `microk8s kubectl delete deployment hello-py`
 
 The cronjob is specified in `cronjob.yaml`.
 It runs `hello.py` once per minute.
@@ -75,8 +85,6 @@ To schedule it, run
 To view that it's scheduled, run
 
     microk8s kubectl get cronjob hello-py-cronjob
-
-As always, you can see the pods created with `watch microk8s kubectl get pods`
 
 To view the output (logs), run
 
