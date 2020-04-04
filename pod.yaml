@@ -5,4 +5,4 @@ metadata:
 spec:
   containers:
   - name: hello-py-pod
-    image: krystofl/hello-py:v1.1
+    image: krystofl/hello-py:latest

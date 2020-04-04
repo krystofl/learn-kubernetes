@@ -8,7 +8,7 @@ if __name__ == '__main__':
         format(datetime.datetime.now().strftime("%H:%M on %A, %B %d, %Y")))
 
   try:
-    with open('my-mounted-secret.txt', 'r') as f:
+    with open('/secrets/my-mounted-secret.txt', 'r') as f:
       secret = f.read()
     print("The secret is: {}".format(secret))
 

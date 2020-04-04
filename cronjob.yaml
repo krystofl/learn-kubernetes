@@ -10,7 +10,18 @@ spec:
         spec:
           containers:
           - name: hello-py-cronjob
-            image: krystofl/hello-py:v1.1
+            image: krystofl/hello-py:latest
             args:
             - ./hello.py
+            volumeMounts:
+            - name: secret-volume
+              mountPath: "/secrets"
+              readOnly: true
           restartPolicy: OnFailure
+          volumes:
+          - name: secret-volume
+            secret:
+              secretName: my-secret
+              items:
+              - key: secret.txt
+                path: my-mounted-secret.txt

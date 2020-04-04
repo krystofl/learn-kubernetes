@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: hello-py
-          image: krystofl/hello-py:v1.1
+          image: krystofl/hello-py:latest
           volumeMounts:
           - name: secret-volume
             mountPath: "/"
