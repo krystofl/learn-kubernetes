@@ -14,7 +14,10 @@ The following assumes you have Docker installed and working
    - 3.2. Mount a volume (TODO)
 5. Same 1-4 above, but now with a private image (TODO)
 
-**Questions:**
+**Questions & TODOs:**
+- remaining TODOs from above
+- hello-py is a great example of a cronjob. Add back in the node.js example
+for deployments
 
 
 ## Keep an eye on things
