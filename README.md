@@ -18,6 +18,10 @@ The following assumes you have Docker installed and working
 - remaining TODOs from above
 - hello-py is a great example of a cronjob. Add back in the node.js example
 for deployments
+- add namespaces
+- add contexts (namespace + cluster)?
+- add a Makefile that runs all these different jobs?
+
 
 
 ## Keep an eye on things
@@ -69,7 +73,9 @@ To view the output (logs), run
 
 where <<PODNAME>> is the name of a pod.
 
-To delete the cronjob, run `microk8s kubectl delete cronjob hello-py-cronjob`
+To delete the cronjob, run
+
+    microk8s kubectl delete cronjob hello-py-cronjob
 
 
 
@@ -99,18 +105,47 @@ How the secret gets mounted is specified in `cronjob.yaml`:
 
 # 4. Do it all with a private container image
 
-TODO
+1. Make a new private repo on GitLab
+   (we'll only use it for the container registry)
+2. Make sure you're authenticated to gitlab in docker
+   `docker login registry.gitlab.com`
+   (will need to use a [Personal Access Token](https://gitlab.com/help/user/profile/personal_access_tokens))
+3. Create a Deploy Token for the repo on GitLab
+   (go to the repo -> Settings -> CI/CD -> Deploy Tokens);
+   under "Scopes", check "read_registry"
+4. create the secret in kubernetes
+   (take care to enter your USERNAME and PASSWORD below)
 
-
-
-
-
-
+        microk8s kubectl create secret docker-registry hello-py-private-gitlab-pull-secret --docker-server=registry.gitlab.com --docker-username=USERNAME --docker-password=PASSWORD --dry-run=client -o json | microk8s kubectl apply -f -
+5. Note how the `hello-py-private-gitlab-pull-secret` is added
+   in cronjob_private.yaml.
 
 
 
 
 # Notes
+
+## Debugging Stuff
+
+To keep an eye on pods as they go up and down, use
+`watch microk8s kubectl get pods`.
+You can do the same thing with deployments, cronjobs etc.
+
+To get details, use `microk8s kubectl describe SOMETHING`,
+where something is the thing you want details on.
+
+To get logs, use `microk8s kubectl logs PODNAME`.
+
+To watch the logs live, use `microk8s kubectl logs --tail 200 -f PODNAME`.
+
+To get a shell inside a running container, use
+`microk8s kubectl exec -it deployment/api /bin/bash`.
+NOTE: `bash` may not be available; use `sh` if it is not.
+
+To keep an ephemeral container running so that you can get a shell in
+(for instance for python scripts run by a CronJob), you could change
+the command to execute, for example to `/bin/bash` or `sleep(10000)`.
+
 
 ## Deployments
 Create a deployment:
