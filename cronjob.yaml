@@ -13,6 +13,8 @@ spec:
             image: krystofl/hello-py:latest
             args:
             - ./hello.py
+            - -n
+            - Bob
             volumeMounts:
             - name: secret-volume
               mountPath: "/secrets"

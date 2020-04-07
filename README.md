@@ -39,6 +39,12 @@ To create a container from it, run
 
     docker build -t hello-py:latest .
 
+Images tagged `latest` (as above) are unique in that if the
+`imagePullPolicy` is not specified for an image, the value `Always`
+is automatically applied (i.e. the image is pulled every time the pod is started).
+See [the documentation](https://kubernetes.io/docs/concepts/configuration/overview/#container-images) for more info.
+
+
 
 # 2. Push the image to a repository
 
@@ -47,6 +53,9 @@ In this case to docker hub @ `krystofl/hello-py`
 
     docker tag hello-py:latest krystofl/hello-py:latest
     docker push krystofl/hello-py:latest
+
+You should be able to see the image on
+[Docker Hub](https://hub.docker.com/repository/docker/krystofl/hello-py).
 
 
 
@@ -125,7 +134,7 @@ How the secret gets mounted is specified in `cronjob.yaml`:
 
 # Notes
 
-## Debugging Stuff
+## Monitoring & Debugging Stuff
 
 To keep an eye on pods as they go up and down, use
 `watch microk8s kubectl get pods`.
