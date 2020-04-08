@@ -1,0 +1,29 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hello-py-private-cronjob
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello-py-private-cronjob
+            image: registry.gitlab.com/krystofl/hello-py-private:latest
+            args:
+            - ./hello.py
+            volumeMounts:
+            - name: secret-volume
+              mountPath: "/secrets"
+              readOnly: true
+          restartPolicy: OnFailure
+          imagePullSecrets:
+          - name: hello-py-private-gitlab-pull-secret
+          volumes:
+          - name: secret-volume
+            secret:
+              secretName: my-secret
+              items:
+              - key: secret.txt
+                path: my-mounted-secret.txt
