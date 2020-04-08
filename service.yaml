@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: hello-py
-  labels:
-    app: hello-py
-spec:
-  selector:
-    app: hello-py

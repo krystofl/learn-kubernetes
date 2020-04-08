@@ -3,7 +3,7 @@
 Krystof learns Kubernetes.
 
 The following assumes you have Docker installed and working
-(and are logged in to Docker Hub), and that you have a
+(and are logged into Docker Hub), and that you have a
 [Microk8s](https://microk8s.io/#get-started) cluster working.
 
 **Goals:**
@@ -15,19 +15,84 @@ The following assumes you have Docker installed and working
 5. Same 1-4 above, but now with a private image (TODO)
 
 **Questions & TODOs:**
+- divide this up into separate examples:
+  - 1. node.js app
+  - 2. python cronjob with secret
+  - 3. add namespaces (and contexts) and a Makefile to automate things
+  - 4. add local hostname volume.
+  - 5. add Kustomize or Helm
 - remaining TODOs from above
-- hello-py is a great example of a cronjob. Add back in the node.js example
-for deployments
-- add namespaces
-- add contexts (namespace + cluster)?
-- add a Makefile that runs all these different jobs?
+
+To keep an eye on pods as they go up and down, use
+`watch microk8s kubectl get pods`.
+You can do the same thing with deployments, cronjobs etc.
 
 
 
-## Keep an eye on things
-To watch what's going on, you could use
-`watch microk8s kubectl get pods` and
-`watch microk8s kubectl get deployments`
+# 1. A Node.js Hello World App
+
+This was originally forked from https://github.com/rackbrainz/kubernetes-101,
+which accompanies
+[this series of Medium posts](https://medium.com/rackbrains/kubernetes-101-part-1-8bd033f3ff33).
+
+`cd 01-node-js`
+
+It's a simple Hello-World app in Node.js. To test that the app works,
+run it with `node index.js` and go to `localhost:3000` in a web browser.
+
+Build the container image:
+
+    docker build -t krystofl/hello-node:v1 .
+
+Now we need to create deployment of the image. We have two options:
+1. use the pre-built image from Docker Hub
+2. use the image we just built (and which is local to our computer)
+
+## 1.1 - Using an Image from a Remote Registry
+
+Push the locally-created image to Docker Hub:
+
+    docker push krystofl/hello-node:v1
+
+Create a deployment:
+
+    microk8s kubectl create -f deployment-remote.yaml
+
+Set up port-forwarding so that we can talk to the app
+(fill in the PODNAME below; you can get it from `microk8s kubectl get pods`):
+
+    microk8s kubectl port-forward PODNAME 3000:3000
+
+You should now see the app at localhost:3000.
+Delete the deployment when you are done:
+
+    microk8s kubectl delete deployment hello-node
+
+
+## 1.2. Using the local image
+
+This is somewhat tricky with Microk8s, but there should be two options:
+1. [Using Microk8s's built-in registry](https://microk8s.io/docs/registry-built-in)
+2. [Using the images without a registry](https://microk8s.io/docs/registry-images)
+
+Note that for approach 2 above, the `latest` tag CANNOT be used
+(this trick relies on caching, and Kubernetes does not look in cache for images
+ tagged `latest`).
+
+
+
+# 2. Python CronJob
+
+incl. Makefile
+figure out the using a local image (see two options above)
+
+
+# 3. Using a Private Remote Registry
+
+TODO
+
+
+
 
 
 
@@ -47,6 +112,8 @@ See [the documentation](https://kubernetes.io/docs/concepts/configuration/overvi
 
 
 # 2. Push the image to a repository
+
+Need to be logged in to Docker Hub.
 
 In this case to docker hub @ `krystofl/hello-py`
 (adapted from https://stackoverflow.com/a/58633144)
@@ -132,7 +199,10 @@ How the secret gets mounted is specified in `cronjob.yaml`:
 
 
 
-# Notes
+# Notes & Resources
+
+Take a look at the
+[Kubernetes Configuration Best Practices Here](https://kubernetes.io/docs/concepts/configuration/overview/)
 
 ## Monitoring & Debugging Stuff
 
@@ -189,8 +259,9 @@ sudo docker push localhost:5000/hello-py
 ```
 
 
-## Resources
+# Resources
 
-This was originally forked from https://github.com/rackbrainz/kubernetes-101,
-which accompanies
-[this series of Medium posts](https://medium.com/rackbrains/kubernetes-101-part-1-8bd033f3ff33).
+Working with local images in Microk8s without a local registry:
+https://microk8s.io/docs/registry-images
+
+**Does not work with the `latest` tag!**
