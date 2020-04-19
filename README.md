@@ -159,9 +159,9 @@ To delete it, run `make delete-private-cronjob`:
 
 ## Monitoring & Debugging Stuff
 
-To keep an eye on pods as they go up and down, use
-`watch microk8s kubectl get pods`.
-You can do the same thing with deployments, cronjobs etc.
+To keep an eye on things as they go up and down, use
+`watch microk8s kubectl get all`.
+You can also get just nodes, pods, or any other resource.
 
 To get details, use `microk8s kubectl describe SOMETHING`,
 where something is the thing you want details on.
@@ -177,6 +177,49 @@ NOTE: `bash` may not be available; use `sh` if it is not.
 To keep an ephemeral container running so that you can get a shell in
 (for instance for python scripts run by a CronJob), you could change
 the command to execute, for example to `/bin/bash` or `sleep(10000)`.
+
+To get details of an unreachable node, you can try
+`microk8s kubectl get node NODENAME -o yaml >OUTPUTFILE.yaml`
+
+
+### AppArmor Interference
+
+**TL;DR: if the main node is stuck in `NotReady` status, reinstalling
+        Microk8s could be the simplest solution.**
+
+[AppArmor](https://gitlab.com/apparmor/apparmor/-/wikis/Documentation)
+is a Linux Security Module implementation of name-based mandatory access controls.
+
+Sometimes, it can block Microk8s processes from functioning properly.
+This can manifest itself as 100% CPU usage after `microk8s start`, with
+`apparmor_parser` using a ton of CPU resources as shown by running `top`.
+Another way to notice this is the main node created by microk8s being stuck
+in the `NotReady` status.
+
+[Here is a guide](https://wiki.debian.org/AppArmor/HowToUse#Inspect_the_current_state)
+in figuring out if AppArmor is messing with Microk8s.
+
+List running executables which are currently confined by an AppArmor profile:
+
+    ps auxZ | grep -v '^unconfined'
+
+[This AskUbuntu answer](https://askubuntu.com/a/1144525) describes how to
+disable AppArmor for a specific service.
+
+To disable AppArmor for `containerd`:
+
+    sudo ln -s /etc/apparmor.d/cri-containerd.apparmor.d /etc/apparmor.d/disable
+    sudo apparmor_parser -R /etc/apparmor.d/cri-containerd.apparmor.d
+
+That didn't work, or at least it didn't completely resolve the problem.
+
+[This answer](https://askubuntu.com/a/491304) describes how to fiddle with
+AppArmor settings using apparmor-utils.
+
+    sudo apt install apparmor-utils
+
+Ultimately, though, nothing worked... until I did a fresh install of
+Microk8s, which worked like a charm.
 
 
 
