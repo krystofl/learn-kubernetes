@@ -182,6 +182,34 @@ To get details of an unreachable node, you can try
 `microk8s kubectl get node NODENAME -o yaml >OUTPUTFILE.yaml`
 
 
+## Namespaces & Contexts
+
+**[Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)**:
+Kubernetes supports multiple virtual clusters backed by the same physical cluster.
+These virtual clusters are called namespaces.
+
+The documentation says that *"Namespaces are intended for use in environments with many users spread across multiple teams, or projects. For clusters with a few to tens of users, you should not need to create or think about namespaces at all. Start using namespaces when you need the features they provide."*
+
+When working with multiple clusters, including virtual clusters aka Namespaces,
+contexts are used to switch which cluster commands run on.
+[Documentation for Working with Multiple Clusters](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/).
+
+The cluster configs are saved in `~/.kube/config`.
+
+To see available contexts:
+
+    kubectl config get-contexts
+
+To use a specific context:
+
+    kubectl config use-context MY-CONTEXT-NAME
+
+To see which context is currently used:
+
+    kubectl config current-context
+
+
+
 ### AppArmor Interference
 
 **TL;DR: if the main node is stuck in `NotReady` status, reinstalling
