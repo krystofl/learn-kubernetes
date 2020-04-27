@@ -209,6 +209,38 @@ To see which context is currently used:
     kubectl config current-context
 
 
+## Sealed Secrets
+
+**Problem:** "I can manage all my K8s config in git, except Secrets."
+
+**Solution:** Encrypt your Secret into a SealedSecret, which *is* safe
+to store - even to a public repository.  The SealedSecret can be
+decrypted only by the controller running in the target cluster and
+nobody else (not even the original author) is able to obtain the
+original Secret from the SealedSecret.
+
+[SealedSecret Repo](https://github.com/bitnami-labs/sealed-secrets) -
+it's not an official part of Kubernetes.
+
+You can create a SealedSecret like so:
+
+	kubectl \
+		--context $(context) \
+		--namespace $(namespace) \
+		create \
+		secret \
+		docker-registry \
+		MY-SECRET-NAME \
+		--docker-server=$$REGISTRY \
+		--docker-username=$$USERNAME \
+		--docker-password=$$PASSWORD \
+		--dry-run \
+		-o json | \
+	kubeseal \
+		--controller-namespace sealed-secrets \
+		> ENCRYPTED-SECRET-FILENAME.yaml
+
+
 
 ### AppArmor Interference
 
