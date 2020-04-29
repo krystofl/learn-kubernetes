@@ -182,6 +182,21 @@ To get details of an unreachable node, you can try
 `microk8s kubectl get node NODENAME -o yaml >OUTPUTFILE.yaml`
 
 
+## Get a Terminal in a running Pod
+
+In debugging, it's helpful to be able to get a terminal in a running pod.
+To do that, you can create a pod that just sits there indefinitely:
+
+    args :
+    - tail
+    - -f
+    - /dev/null
+
+Then get a terminal in it by running
+
+    kubectl exec -it <PODNAME> bash
+
+
 ## Namespaces & Contexts
 
 **[Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)**:
@@ -238,8 +253,11 @@ You can create a SealedSecret like so:
 		-o json | \
 	kubeseal \
 		--controller-namespace sealed-secrets \
-		> ENCRYPTED-SECRET-FILENAME.yaml
+		> ENCRYPTED-SECRET-FILENAME.json
 
+To then create a Kubernetes secret from the SealedSecret, use
+
+    kubectl create -f ENCRYPTED-SECRET-FILENAME.json
 
 
 ### AppArmor Interference
