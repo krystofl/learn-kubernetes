@@ -129,9 +129,10 @@ Now let's do it with a private registry. We'll use GitLab here.
    (we'll only use it for the container registry)
 2. Make sure you're authenticated to gitlab in docker
    `docker login registry.gitlab.com`
-   (will need to use a [Personal Access Token](https://gitlab.com/help/user/profile/personal_access_tokens))
+   (will need to use a [Personal Access Token](https://gitlab.com/profile/personal_access_tokens))
 3. Create a Deploy Token for the repo on GitLab
    (go to the repo -> Settings -> CI/CD -> Deploy Tokens);
+   (go to the repo -> Settings -> Repository -> Deploy Tokens);
    under "Scopes", check "read_registry"
 4. create the secret in Microk8s `make gitlab-pull-secret`:
 
